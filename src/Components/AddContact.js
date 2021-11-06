@@ -1,45 +1,56 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Form, Button } from "react-bootstrap";
+import { useForm } from "react-hook-form";
 
 export const AddContact = (props) => {
-  const nameRef = useRef("");
-  const emailRef = useRef("");
+  const { register, handleSubmit, errors } = useForm();
   // const [error, setError] = useState(false);
 
-  const addContactHandler = (event) => {
-    event.preventDefault();
-    const name = nameRef.current.value;
-    const email = emailRef.current.value;
-    if (name.trim() === "" || email.trim() === "") {
-      // setError(true);
-      return;
-    }
+  const onSubmit = (data) => {
     props.addContact({
-      name: nameRef.current.value,
-      email: emailRef.current.value,
+      name: data.name,
+      email: data.email,
+      password: data.password
     });
-    nameRef.current.value="";
-    emailRef.current.value="";
+    console.log(errors);
   };
 
   return (
     <div className="d-flex justify-content-center p-2">
       {/* {error && alert("all fields are mandatory")} */}
-      <Form style={{ width: "35rem" }} onSubmit={addContactHandler}>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
+      <Form style={{ width: "35rem" }} onSubmit={handleSubmit(onSubmit)}>
+        <Form.Group className="mb-3" controlId="formBasicUsername">
           <Form.Label>Name</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter Name"
             required
-            ref={nameRef}
+            {...register("name", { required: "Username is required" })}
           />
         </Form.Group>
+        {/* <p>{errors.name?.message}</p> */}
 
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
-          <Form.Control type="email" placeholder="Enter email" ref={emailRef} />
+          <Form.Control
+            type="email"
+            placeholder="Enter email"
+            {...register("email", { required: "Email is required", pattern: {
+              value: /^\S+@\S+$/i,
+              message: "This is not a valid email",
+            } })}
+          />
         </Form.Group>
+        {/* <p>{errors.email?.message}</p> */}
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Enter password"
+            {...register("password", { required: "Password is required" })}
+          />
+        </Form.Group>
+        {/* <p>{errors.password?.message}</p> */}
         <Button variant="primary" type="submit">
           Submit
         </Button>
